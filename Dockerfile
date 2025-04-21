@@ -1,20 +1,18 @@
 FROM fedora:42
 
+ENV PYTHON_VERSION=3.9
+
 RUN dnf -y update && \
     dnf -y install \
     g++ make wget pv git bash xz \
-    python3.10 python3.10-devel \
+    python${PYTHON_VERSION} python${PYTHON_VERSION}-devel \
     mediainfo psmisc procps-ng supervisor && \
     dnf clean all
 
-RUN python3.10 -m ensurepip --upgrade && \
-    python3.10 -m pip install --upgrade pip setuptools && \
-    alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
-    alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip3.10 1
-
-RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/64/) && \
-    wget -q https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-linux${arch}-gpl-7.1.tar.xz && \
-    tar -xvf *xz && cp *7.1/bin/* /usr/bin && rm -rf *xz && rm -rf *7.1
+RUN python${PYTHON_VERSION} -m ensurepip --upgrade && \
+    python${PYTHON_VERSION} -m pip install --upgrade pip setuptools && \
+    alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 1 && \
+    alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip${PYTHON_VERSION} 1
 
 ENV SUPERVISORD_CONF_DIR=/etc/supervisor/conf.d
 ENV SUPERVISORD_LOG_DIR=/var/log/supervisor
